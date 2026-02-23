@@ -1,3 +1,38 @@
+// Mobile Menu Toggle
+function initMobileMenu() {
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const navMenu = document.getElementById('navMenu');
+  
+  if (!mobileMenuBtn || !navMenu) return;
+  
+  mobileMenuBtn.addEventListener('click', function() {
+    mobileMenuBtn.classList.toggle('active');
+    navMenu.classList.toggle('active');
+  });
+  
+  // Close menu when a nav item is clicked
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', function() {
+      mobileMenuBtn.classList.remove('active');
+      navMenu.classList.remove('active');
+    });
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener('click', function(event) {
+    if (!event.target.closest('header')) {
+      mobileMenuBtn.classList.remove('active');
+      navMenu.classList.remove('active');
+    }
+  });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  initMobileMenu();
+});
+
 // Add chatbot modal to page
 function addChatbot() {
   if (document.getElementById('chatbot-modal')) return;
