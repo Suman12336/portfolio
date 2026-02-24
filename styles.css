@@ -937,7 +937,11 @@ footer {
   }
 
   .hero-img {
-    display: none;
+    display: block;
+    width: 80%;
+    position: static;
+    bottom: auto;
+    right: auto;
   }
 
   .social-section {
@@ -1024,7 +1028,19 @@ footer {
   }
 
   .right {
-    display: none;
+    display: block;
+  }
+
+  .img-wrap {
+    height: auto;
+    width: 100%;
+  }
+
+  .hero-img {
+    width: 80%;
+    position: static;
+    bottom: auto;
+    right: auto;
   }
 
   .portfolio-grid {
@@ -1086,7 +1102,19 @@ footer {
   }
 
   .right {
-    display: none;
+    display: block;
+  }
+
+  .img-wrap {
+    height: auto;
+    width: 100%;
+  }
+
+  .hero-img {
+    width: 80%;
+    position: static;
+    bottom: auto;
+    right: auto;
   }
 
   .portfolio-grid {
@@ -1154,7 +1182,19 @@ footer {
   }
 
   .right {
-    display: none;
+    display: block;
+  }
+
+  .img-wrap {
+    height: auto;
+    width: 100%;
+  }
+
+  .hero-img {
+    width: 80%;
+    position: static;
+    bottom: auto;
+    right: auto;
   }
 
   .portfolio-grid {
