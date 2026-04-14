@@ -1,3 +1,26 @@
+// Dark Mode Toggle
+function initDarkMode() {
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+  
+  if (!themeToggle) return;
+  
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const currentTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+  body.classList.toggle('dark', currentTheme === 'dark');
+  themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+  themeToggle.setAttribute('aria-label', currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+  
+  themeToggle.addEventListener('click', function() {
+    body.classList.toggle('dark');
+    const isDark = body.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '☀️' : '🌙';
+    themeToggle.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
+  });
+}
+
 // Mobile Menu Toggle
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -6,8 +29,10 @@ function initMobileMenu() {
   if (!mobileMenuBtn || !navMenu) return;
   
   mobileMenuBtn.addEventListener('click', function() {
-    mobileMenuBtn.classList.toggle('active');
+    const isOpen = mobileMenuBtn.classList.toggle('active');
     navMenu.classList.toggle('active');
+    mobileMenuBtn.setAttribute('aria-expanded', isOpen.toString());
+    mobileMenuBtn.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
   });
   
   // Close menu when a nav item is clicked
@@ -28,10 +53,129 @@ function initMobileMenu() {
   });
 }
 
+// Backend removed: localStorage-only data handling is used for messages and projects.
+
+function getStoredMessages() {
+  try {
+    return JSON.parse(localStorage.getItem('portfolio_messages') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredMessages(messages) {
+  localStorage.setItem('portfolio_messages', JSON.stringify(messages));
+}
+
+function addMessageToStorage(message) {
+  const messages = getStoredMessages();
+  messages.unshift(message);
+  saveStoredMessages(messages);
+  return messages;
+}
+
+function deleteMessage(id) {
+  const messages = getStoredMessages().filter(msg => msg.id !== id);
+  saveStoredMessages(messages);
+  return messages;
+}
+
+function updateMessage(id, updates) {
+  const messages = getStoredMessages();
+  const updated = messages.map(msg => msg.id === id ? { ...msg, ...updates } : msg);
+  saveStoredMessages(updated);
+  return updated;
+}
+
+function getStoredProjects() {
+  try {
+    return JSON.parse(localStorage.getItem('portfolio_projects') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredProjects(projects) {
+  localStorage.setItem('portfolio_projects', JSON.stringify(projects));
+}
+
+function getChatApiKey() {
+  return window.OPENAI_API_KEY || '';
+}
+
+async function fetchChatResponse(message) {
+  const apiKey = getChatApiKey();
+  if (!apiKey) return null;
+
+  const payload = {
+    model: 'gpt-3.5-turbo',
+    messages: [
+      { role: 'system', content: 'You are a helpful portfolio assistant for Suman Singh. Keep answers friendly, concise, and guide visitors to the portfolio, contact, or resume section when relevant.' },
+      { role: 'user', content: message }
+    ],
+    temperature: 0.75,
+    max_tokens: 250,
+  };
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + apiKey,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error('Chat API error: ' + errorText);
+  }
+
+  const data = await response.json();
+  return data?.choices?.[0]?.message?.content?.trim() || null;
+}
+
+function renderPortfolioCards() {
+  const container = document.getElementById('portfolioGrid');
+  if (!container) return;
+
+  const projects = getStoredProjects();
+  if (!projects.length) {
+    return;
+  }
+
+  container.innerHTML = projects.map(project => `
+    <article class="portfolio-card">
+      <div class="portfolio-img">
+        <div class="placeholder-img" style="background: ${project.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">${project.icon || '💻'}</div>
+      </div>
+      <div class="portfolio-info">
+        <div class="project-meta">
+          <span class="project-type">${project.type || 'Project'}</span>
+          <span class="project-status">${project.status || 'Live'}</span>
+        </div>
+        <h3>${project.title || 'Untitled Project'}</h3>
+        <p>${project.description || ''}</p>
+        <div class="portfolio-tags">
+          ${(project.tags || []).map(tag => `<span>${tag}</span>`).join('')}
+        </div>
+        <p class="project-highlight">${project.highlight || ''}</p>
+        <div class="project-detail-row">
+          <div class="project-detail-item"><strong>Role:</strong> ${project.role || 'Contributor'}</div>
+          <div class="project-detail-item"><strong>Result:</strong> ${project.result || 'Delivered outcome'}</div>
+        </div>
+        <div class="project-links">
+          <a href="${project.liveUrl || '#portfolio'}" target="_blank" class="link-btn">Live Demo</a>
+          <a href="${project.sourceUrl || 'https://github.com/5uman'}" target="_blank" rel="noopener noreferrer" class="link-btn secondary">Source Code</a>
+        </div>
+      </div>
+    </article>
+  `).join('');
+}
+
+
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-  initMobileMenu();
-});
+// initMobileMenu is called from `init()` to centralize startup
 
 // Add chatbot modal to page
 function addChatbot() {
@@ -58,7 +202,13 @@ function addChatbot() {
   
   // Close button
   document.querySelector('.close-chat').addEventListener('click', function() {
-    document.getElementById('chatbot-modal').style.display = 'none';
+    const chatbotModal = document.getElementById('chatbot-modal');
+    if (chatbotModal) {
+      chatbotModal.classList.remove('show');
+      setTimeout(() => {
+        chatbotModal.style.display = 'none';
+      }, 220);
+    }
   });
   
   // Restore history if present
@@ -79,8 +229,8 @@ function addChatbot() {
     }
   }
 
-  // Send message (with typing simulation and smart replies)
-  function handleSend() {
+  // Send message (with typing simulation and chat API fallback)
+  async function handleSend() {
     const input = document.getElementById('user-input');
     const msg = input.value.trim();
     if (!msg) return;
@@ -88,6 +238,18 @@ function addChatbot() {
     input.value = '';
     saveHistory();
     showTyping();
+
+    try {
+      const apiResponse = await fetchChatResponse(msg);
+      if (apiResponse) {
+        addMessage(apiResponse, 'bot');
+        saveHistory();
+        return;
+      }
+    } catch (error) {
+      console.error('Chat API failed', error);
+    }
+
     setTimeout(() => {
       const res = getBotResponse(msg);
       addMessage(res.text, 'bot');
@@ -157,6 +319,8 @@ function getBotResponse(msg) {
   if (/project|portfolio/.test(t)) return { text: 'You can view my projects in the Portfolio section. Would you like me to scroll there?', quick: ['Yes, show projects', 'No thanks'] };
   if (/skill|skillset|tech|tech stack|languages/.test(t)) return { text: 'I work with HTML, CSS, JavaScript and have experience in networking and basic cybersecurity.', quick: ['Projects', 'Contact'] };
   if (/contact|email|phone/.test(t)) return { text: 'You can email me at sumanprasadsingh90@gmail.com or call +977 9812322394.', quick: ['Email', 'Phone'] };
+  if (/hire/.test(t)) return { text: 'You can contact me via email or phone 📩', quick: ['Email', 'Call'] };
+  if (/resume/i.test(t)) return { text: 'You can download my resume below 👇', quick: ['Download Resume'] };
   if (/email/i.test(t)) return { text: 'Opening your mail client...', quick: [] };
   if (/phone|call/i.test(t)) return { text: 'Tap the phone number in the Contact section to call me.', quick: [] };
   if (/thank/i.test(t)) return { text: 'You\'re welcome! Anything else?', quick: ['Projects', 'Contact'] };
@@ -164,18 +328,25 @@ function getBotResponse(msg) {
 }
 
 // Initialize when document is ready
-function init() {
+async function init() {
   try {
     console.log('init() starting');
   } catch (e) {
     console.error('init start error', e);
   }
+  // Initialize features
+  initDarkMode();
+  initMobileMenu();
   // Let's Talk button - open chatbot
-  const talkBtn = document.querySelector('.header-btn');
+  const talkBtn = document.getElementById('talkBtn');
   if (talkBtn) {
     talkBtn.onclick = function() {
       addChatbot();
-      document.getElementById('chatbot-modal').style.display = 'flex';
+      const chatbotModal = document.getElementById('chatbot-modal');
+      if (chatbotModal) {
+        chatbotModal.style.display = 'flex';
+        chatbotModal.classList.add('show');
+      }
     };
   }
 
@@ -193,7 +364,7 @@ function init() {
   });
 
   // Projects button
-  const projBtn = document.querySelector('.cta-1');
+  const projBtn = document.querySelector('.cta-secondary');
   if (projBtn) {
     projBtn.onclick = function() {
       document.getElementById('portfolio').scrollIntoView({ behavior: 'smooth' });
@@ -201,38 +372,94 @@ function init() {
   }
 
   // Hire me button
-  const hireBtn = document.querySelector('.cta-2');
+  const hireBtn = document.querySelector('.cta-main');
   if (hireBtn) {
     hireBtn.onclick = function() {
       document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
     };
   }
 
-  // Contact form
+  // Contact form submission via Formspree
   const form = document.getElementById('contactForm');
   if (form) {
-    form.onsubmit = function(e) {
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
-      const inputs = this.querySelectorAll('input[type="text"]');
-      const email = this.querySelector('input[type="email"]');
-      const msg = this.querySelector('textarea');
-      
-      if (inputs[0].value && email.value && inputs[1].value && msg.value) {
-        const wrapper = this.parentElement;
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email').value.trim();
+      const subject = document.getElementById('contact-subject').value.trim();
+      const message = document.getElementById('contact-message').value.trim();
+      if (!name || !email || !subject || !message) {
+        return;
+      }
+
+      const formData = new FormData(form);
+      formData.set('_replyto', email);
+      formData.set('_subject', `New message from ${name}: ${subject}`);
+
+      const wrapper = form.parentElement;
+      const existingMessage = wrapper.querySelector('.success-message, .error-message');
+      if (existingMessage) existingMessage.remove();
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Unable to send message.');
+        }
+
+        form.reset();
         const success = document.createElement('div');
         success.className = 'success-message show';
-        success.textContent = 'Thank you! Message sent successfully!';
-        wrapper.insertBefore(success, this);
+        success.textContent = 'Thank you! Your message was sent successfully.';
+        wrapper.insertBefore(success, form);
         setTimeout(() => success.remove(), 5000);
-        this.reset();
-      } else {
-        alert('Please fill all fields');
+      } catch (error) {
+        const errMsg = document.createElement('div');
+        errMsg.className = 'error-message show';
+        errMsg.textContent = 'Oops! Something went wrong. Please try again or email directly.';
+        wrapper.insertBefore(errMsg, form);
+        setTimeout(() => errMsg.remove(), 7000);
       }
-    };
+    });
   }
+
+  renderPortfolioCards();
+  initScrollAnimation();
+}
+
+function initScrollAnimation() {
+  const items = document.querySelectorAll('.fade-in');
+  const animate = () => {
+    items.forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight - 50) {
+        el.classList.add('show');
+      }
+    });
+  };
+  window.addEventListener('scroll', animate);
+  animate();
 }
 
 // Run when ready
+window.onload = () => {
+  const loader = document.getElementById('loader');
+  if (loader) {
+    loader.style.opacity = '1';
+    setTimeout(() => {
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.style.display = 'none';
+      }, 320);
+    }, 240);
+  }
+};
+
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', function() {
     try { console.log('DOMContentLoaded fired'); init(); } catch (err) { console.error(err); }

@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Suman Singh - Web Developer Portfolio">
+  <meta name="keywords" content="web developer, portfolio, Nepal, frontend developer">
+  <meta name="author" content="Suman Singh">
   <title>Suman</title>
 
   <!-- icons -->
@@ -15,10 +18,11 @@
 </head>
 
 <body>
+  <div id="loader">Loading...</div>
   <section id="hero">
     <header>
       <a href="#hero" class="header-logo">Suman<span>.</span></a>
-      <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open navigation menu" aria-controls="navMenu" aria-expanded="false">
         <span></span>
         <span></span>
         <span></span>
@@ -30,34 +34,34 @@
         <a href="#blog" class="nav-item">Blog</a>
         <a href="#contact" class="nav-item">Contact</a>
       </nav>
-      <button class="header-btn">Let's Talk</button>
+      <div class="header-controls">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark and light mode">🌙</button>
+        <a href="resume.html" class="cv-btn" target="_blank" >View CV</a>
+        <button id="talkBtn" class="header-btn">Let's Talk</button>
+      </div>
     </header>
 
     <div class="content">
-      <div class="left">
-        <h3>Hi, I'm Suman Singh!</h3>
-        <h1> Computer Science <span>Student</span></h1>
-        <p>
-           I'm a passionate and curious computer science student, eager to learn and create innovative software solutions. With strong problem-solving skills and a love for coding, he explores programming, web development, and cybersecurity to turn ideas into practical and efficient digital projects.        </p>
+      <div class="left fade-in">
+        <h3>Hi, I'm Suman Singh 👋</h3>
+        <h1>I build modern <span>websites</span> & secure systems</h1>
+        <p>Frontend Developer & Cybersecurity Enthusiast focused on creating fast, responsive and secure web applications.</p>
+        <p class="hero-highlight">🚀 Available for freelance & internships</p>
         <div class="cta-section">
-          <button class="cta-1">Projects
-            <i class="fa-solid fa-code"></i>
-          </button>
-          <button class="cta-2">Hire me
-            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-          </button>
+          <button type="button" class="cta-main">Hire Me</button>
+          <button type="button" class="cta-secondary">View Projects</button>
         </div>
         <div class="social-section">
-          <a href="https://www.facebook.com/5uman" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="https://www.instagram.com/5uman____/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-          <a href="https://www.linkedin.com/in/suman-singh-86ab4b3b0/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
-          <a href="https://github.com/5uman" target="_blank"><i class="fa-brands fa-github"></i></a>
+          <a href="https://www.facebook.com/5uman" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/5uman____/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.linkedin.com/in/suman-singh-86ab4b3b0/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin-in"></i></a>
+          <a href="https://github.com/5uman" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i></a>
         </div>
       </div>
 
       <div class="right">
         <div class="img-wrap">
-          <img class="hero-img" src="pro-pic.png" alt="Suman Singh">
+          <img class="hero-img" src="pro-pic.png" alt="Suman Singh" loading="lazy">
         </div>
       </div>
 
@@ -102,48 +106,75 @@
   <section id="portfolio">
     <div class="container">
       <h2>Portfolio</h2>
-      <div class="portfolio-grid">
-        <div class="portfolio-card">
+      <div id="portfolioGrid" class="portfolio-grid">
+        <article class="portfolio-card fade-in">
           <div class="portfolio-img">
-            <div class="placeholder-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">💻</div>
+            <img src="project1.png" alt="Chatbot Website" loading="lazy">
           </div>
           <div class="portfolio-info">
-            <h3>Web Projects</h3>
-            <p>Collection of web development projects showcasing HTML, CSS, and JavaScript skills.</p>
+            <div class="project-meta">
+              <span class="project-type">Web App</span>
+              <span class="project-status">Featured</span>
+            </div>
+            <h3>Chatbot Website</h3>
+            <p>Built with HTML, CSS, and JavaScript to create an interactive conversational experience for visitors.</p>
             <div class="portfolio-tags">
-              <span>Web Dev</span>
-              <span>Frontend</span>
+              <span>HTML</span>
+              <span>CSS</span>
+              <span>JavaScript</span>
+            </div>
+            <div class="project-links">
+              <a href="#portfolio" class="link-btn">Live Demo</a>
+              <a href="https://github.com/5uman" target="_blank" rel="noopener noreferrer" class="link-btn secondary">GitHub</a>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="portfolio-card">
+        <article class="portfolio-card fade-in">
           <div class="portfolio-img">
-            <div class="placeholder-img" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🔐</div>
+            <img src="project2.png" alt="Security Dashboard" loading="lazy">
           </div>
           <div class="portfolio-info">
-            <h3>Cybersecurity</h3>
-            <p>Security projects and penetration testing implementations.</p>
+            <div class="project-meta">
+              <span class="project-type">Security Dashboard</span>
+              <span class="project-status">In Progress</span>
+            </div>
+            <h3>Security Dashboard</h3>
+            <p>A modern dashboard showcasing security metrics, incident tracking, and vulnerability insights.</p>
             <div class="portfolio-tags">
               <span>Security</span>
-              <span>Networking</span>
+              <span>Dashboard</span>
+              <span>UX</span>
+            </div>
+            <div class="project-links">
+              <a href="#portfolio" class="link-btn">Live Demo</a>
+              <a href="https://github.com/5uman" target="_blank" rel="noopener noreferrer" class="link-btn secondary">GitHub</a>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="portfolio-card">
+        <article class="portfolio-card fade-in">
           <div class="portfolio-img">
-            <div class="placeholder-img" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">⚙️</div>
+            <img src="project3.png" alt="Algorithm Explorer" loading="lazy">
           </div>
           <div class="portfolio-info">
-            <h3>Programming</h3>
-            <p>Software development and algorithmic problem solving in multiple languages.</p>
+            <div class="project-meta">
+              <span class="project-type">Tool</span>
+              <span class="project-status">Completed</span>
+            </div>
+            <h3>Algorithm Explorer</h3>
+            <p>An interactive learning tool built to visualize algorithms and help users understand code flow.</p>
             <div class="portfolio-tags">
-              <span>Coding</span>
               <span>Algorithms</span>
+              <span>Python</span>
+              <span>Learning</span>
+            </div>
+            <div class="project-links">
+              <a href="#contact" class="link-btn">Live Demo</a>
+              <a href="https://github.com/5uman" target="_blank" rel="noopener noreferrer" class="link-btn secondary">GitHub</a>
             </div>
           </div>
-        </div>
+        </article>
       </div>
     </div>
   </section>
@@ -183,18 +214,23 @@
       <h2>Get In Touch</h2>
       <div class="contact-content">
         <div class="contact-form-wrapper">
-          <form class="contact-form" id="contactForm">
+          <form class="contact-form" id="contactForm" action="https://formspree.io/f/mbdqroao" method="POST">
+            <input type="hidden" name="_subject" value="New portfolio message" />
             <div class="form-group">
-              <input type="text" placeholder="Your Name" required>
+              <label for="contact-name">Name</label>
+              <input id="contact-name" name="name" type="text" placeholder="Your Name" required>
             </div>
             <div class="form-group">
-              <input type="email" placeholder="Your Email" required>
+              <label for="contact-email">Email</label>
+              <input id="contact-email" name="email" type="email" placeholder="Your Email" required>
             </div>
             <div class="form-group">
-              <input type="text" placeholder="Subject" required>
+              <label for="contact-subject">Subject</label>
+              <input id="contact-subject" name="subject" type="text" placeholder="Subject" required>
             </div>
             <div class="form-group">
-              <textarea placeholder="Your Message" rows="5" required></textarea>
+              <label for="contact-message">Message</label>
+              <textarea id="contact-message" name="message" placeholder="Your Message" rows="5" required></textarea>
             </div>
             <button type="submit" class="submit-btn">Send Message</button>
           </form>
@@ -230,6 +266,7 @@
   <footer>
     <div class="footer-content">
       <p>&copy; 2026 Suman Singh. All rights reserved.</p>
+      <p>Built with ❤️ by Suman Singh</p>
       <div class="footer-social">
         <a href="https://www.facebook.com/5uman" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
         <a href="https://www.instagram.com/5uman____/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
